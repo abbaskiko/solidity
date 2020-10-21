@@ -670,7 +670,7 @@ the changes in the caller will always be reverted.
 
     Panic exceptions used to use the ``invalid`` opcode before Solidity 0.8.0,
     which consumed all gas available to the call.
-    Exceptions that use ``require`` do not consume any gas starting from the Metropolis release.
+    Exceptions that use ``require`` used to consume all gas until before the Metropolis release.
 
 ``revert``
 ----------
