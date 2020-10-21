@@ -566,11 +566,11 @@ Exceptions can be caught with the ``try``/``catch`` statement.
 
 Exceptions can contain data that is passed back to the caller.
 This data consists of a 4-byte selector and subsequent :ref:`ABI-encoded<abi>` data.
-The selector is computed in the same way as a function selector as
+The selector is computed in the same way as a function selector, i.e.,
 the first four bytes of the keccak256-hash of a function
 signature - in this case an error signature.
 
-Currently, Solidity supports to error signatures: ``Error(string)``
+Currently, Solidity supports two error signatures: ``Error(string)``
 and ``Panic(uint256)``. The first ("error") is used for "regular" error conditions
 while the second ("panic") is used for errors that should not be present in bug-free code.
 
@@ -586,7 +586,7 @@ The same error is created by the compiler in certain situations as listed below.
 Assert should only be used to test for internal
 errors, and to check invariants. Properly functioning code should
 never create a Panic, not even on invalid external input.
-If this happens there
+If this happens, then there
 is a bug in your contract which you should fix. Language analysis
 tools can evaluate your contract to identify the conditions and
 function calls which will cause a Panic.
@@ -597,14 +597,14 @@ The error code supplied with the error data indicates the kind of panic.
 #. 0x01: If you call ``assert`` with an argument that evaluates to false.
 #. 0x11: If an arithmetic operation results in underflow or overflow outside of an ``unchecked { ... }`` block.
 #. 0x12; If you divide or modulo by zero (e.g. ``5 / 0`` or ``23 % 0``).
-#. 0x21: If you convert a value too big or negative into an enum type.
+#. 0x21: If you convert a value that is too big or negative into an enum type.
 #. 0x31: If you call ``.pop()`` on an empty array.
-#. 0x32: If you access an array, ``bytesN`` or an array slice at a too large or negative index (i.e. ``x[i]`` where ``i >= x.length`` or ``i < 0``).
+#. 0x32: If you access an array, ``bytesN`` or an array slice at an out-of-bounds or negative index (i.e. ``x[i]`` where ``i >= x.length`` or ``i < 0``).
 #. 0x41: If you allocate too much memory or create an array that is too large.
 #. 0x51: If you call a zero-initialized variable of internal function type.
 
 The ``require`` function either creates an error of type ``Error(string)``
-or ar error without ary error data and it
+or an error without any error data and it
 should be used to ensure valid conditions
 that cannot be detected until execution time.
 This includes conditions on inputs
@@ -749,7 +749,7 @@ A failure in an external call can be caught using a try/catch statement, as foll
                 errorCount++;
                 return (0, false);
             } catch (bytes memory /*lowLevelData*/) {
-                // This is executed in case revert() was used
+                // This is executed in case revert() was used.
                 errorCount++;
                 return (0, false);
             }
@@ -775,7 +775,7 @@ It is planned to support other types of error data in the future.
 The string ``Error`` is currently parsed as is and is not treated as an identifier.
 
 The clause ``catch (bytes memory lowLevelData)`` is executed if the error signature
-does not match any other clause, or if there was an error during decoding of the error
+does not match any other clause, if there was an error while decoding the error
 message, or
 if no error data was provided with the exception.
 The declared variable provides access to the low-level error data in that case.
