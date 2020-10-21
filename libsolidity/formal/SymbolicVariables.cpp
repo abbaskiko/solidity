@@ -245,7 +245,24 @@ SymbolicTupleVariable::SymbolicTupleVariable(
 	solAssert(m_sort->kind == Kind::Tuple, "");
 }
 
-vector<SortPointer> const& SymbolicTupleVariable::components()
+smtutil::Expression SymbolicTupleVariable::currentValue(frontend::TypePointer const& _targetType) const
+{
+	if (!_targetType || sort() == smtSort(*_targetType))
+		return SymbolicVariable::currentValue();
+
+	auto const& thisTuple = dynamic_cast<TupleSort const&>(*sort());
+	auto const& otherTuple = dynamic_cast<TupleSort const&>(*smtSort(*_targetType));
+	solAssert(thisTuple.components.size() == otherTuple.components.size(), "");
+	vector<smtutil::Expression> args;
+	for (size_t i = 0; i < thisTuple.components.size(); ++i)
+		args.emplace_back(component(i, type(), _targetType));
+	return smtutil::Expression::tuple_constructor(
+		smtutil::Expression(make_shared<smtutil::SortSort>(smtSort(*_targetType)), ""),
+		args
+	);
+}
+
+vector<SortPointer> const& SymbolicTupleVariable::components() const
 {
 	auto tupleSort = dynamic_pointer_cast<TupleSort>(m_sort);
 	solAssert(tupleSort, "");
@@ -256,7 +273,7 @@ smtutil::Expression SymbolicTupleVariable::component(
 	size_t _index,
 	TypePointer _fromType,
 	TypePointer _toType
-)
+) const
 {
 	optional<smtutil::Expression> conversion = symbolicTypeConversion(_fromType, _toType);
 	if (conversion)
