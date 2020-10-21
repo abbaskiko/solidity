@@ -22,7 +22,6 @@
 namespace solidity::util
 {
 
-
 enum class PanicCode
 {
 	Generic = 0x00, // generic / unspecified error.
